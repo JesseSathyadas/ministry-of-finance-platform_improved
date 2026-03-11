@@ -69,7 +69,7 @@ export default function TrendAnalysisPage() {
                 throw new Error("Insufficient data for analysis")
             }
 
-            const values = metricData.map(d => d.value ?? (d as any).metric_value ?? 0)
+            const values = metricData.map(d => d.value ?? (d as { metric_value?: number }).metric_value ?? 0)
             const timestamps = metricData.map(d => d.recorded_at)
 
             // 3. Call AI Service
