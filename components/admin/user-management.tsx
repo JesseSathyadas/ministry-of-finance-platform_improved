@@ -39,7 +39,7 @@ export interface UserManagementProps {
     users: UserProfile[]
     onUpdateRole?: (userId: string, newRole: UserRole) => Promise<void>
     onToggleActive?: (userId: string, isActive: boolean) => Promise<void>
-    onCreateUser?: (data: { email: string; fullName: string; role: UserRole }) => Promise<any>
+    onCreateUser?: (data: { email: string; fullName: string; role: UserRole }) => Promise<unknown>
 }
 
 export function UserManagement({ users, onUpdateRole, onToggleActive, onCreateUser }: UserManagementProps) {
@@ -60,8 +60,9 @@ export function UserManagement({ users, onUpdateRole, onToggleActive, onCreateUs
         setIsLoading(userId)
         try {
             await onUpdateRole(userId, newRole)
-        } catch (error: any) {
-            alert(`Failed to update role: ${error.message}`)
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(`Failed to update role: ${message}`)
         } finally {
             setIsLoading(null)
         }
@@ -73,8 +74,9 @@ export function UserManagement({ users, onUpdateRole, onToggleActive, onCreateUs
         setIsLoading(userId)
         try {
             await onToggleActive(userId, !isActive)
-        } catch (error: any) {
-            alert(`Failed to update status: ${error.message}`)
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(`Failed to update status: ${message}`)
         } finally {
             setIsLoading(null)
         }
@@ -90,8 +92,9 @@ export function UserManagement({ users, onUpdateRole, onToggleActive, onCreateUs
             setShowInviteDialog(false)
             setNewUser({ email: '', fullName: '', role: 'analyst' })
             alert("User created successfully!")
-        } catch (error: any) {
-            alert(`Failed to create user: ${error.message}`)
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(`Failed to create user: ${message}`)
         } finally {
             setIsCreating(false)
         }

@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { UserPlus } from "lucide-react"
 
 export default function SignupPage() {
     const [email, setEmail] = useState("")
@@ -22,7 +21,7 @@ export default function SignupPage() {
         setLoading(true)
 
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -39,8 +38,9 @@ export default function SignupPage() {
                 // If triggers are working, profile is created. If not, it won't be.
                 router.push("/login")
             }
-        } catch (err: any) {
-            alert(err.message)
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : "An error occurred"
+            alert(message)
         } finally {
             setLoading(false)
         }

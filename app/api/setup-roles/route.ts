@@ -1,13 +1,13 @@
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 // This is a special dev tool helper to force-fix roles
-export async function GET(request: NextRequest) {
+export async function GET() {
     const supabase = createClient()
 
-    // 1. Get the users
-    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
+    // 1. Get the users (Disabled due to unused/RLS restrictions in this script)
+    // const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
 
     // Note: listUsers() usually requires Service Role key if not in local dev with proper permissions.
     // However, in this local setup, RLS might block us from seeing *other* users if we are just "authenticated".

@@ -63,6 +63,8 @@ export async function analyzeTrends(
             throw new Error(errorData.detail || `AI Service Error: ${response.statusText}`)
         }
 
+        const result: TrendAnalysisResponse = await response.json()
+        return result
     } catch (error: unknown) {
         console.error('AI Analysis Failed:', error)
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'

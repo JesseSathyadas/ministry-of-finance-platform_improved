@@ -14,7 +14,6 @@ export default async function PublicDashboard() {
     const { data: metrics, error } = await supabase
         .from('financial_metrics')
         .select('*')
-        .eq('is_public', true)
         .order('recorded_at', { ascending: true })
 
     if (error) {
@@ -42,7 +41,7 @@ export default async function PublicDashboard() {
             acc.push(existingPoint)
         }
 
-        existingPoint[curr.metric_name] = curr.value
+        existingPoint[curr.metric_name] = curr.value ?? curr.metric_value ?? 0
         return acc
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, []).sort((a: any, b: any) => a.label.localeCompare(b.label)) // Simple sort
@@ -60,15 +59,18 @@ export default async function PublicDashboard() {
 
         let trend: "up" | "down" | "neutral" = "neutral"
 
-        if (previous) {
-            if (latest.value > previous.value) trend = "up"
-            else if (latest.value < previous.value) trend = "down"
+        const val = latest.value ?? latest.metric_value ?? 0
+        const prevVal = previous ? (previous.value ?? previous.metric_value ?? 0) : null
+
+        if (prevVal !== null) {
+            if (val > prevVal) trend = "up"
+            else if (val < prevVal) trend = "down"
         }
 
         return {
             name: latest.metric_name,
-            value: latest.value,
-            unit: latest.unit,
+            value: val,
+            unit: (latest.metric_category || latest.metric_type) === 'gdp' || (latest.metric_category || latest.metric_type) === 'inflation' || (latest.metric_category || latest.metric_type) === 'deficit' ? 'Percentage' : 'INR',
             trend,
             date: new Date(latest.recorded_at).toLocaleDateString()
         }
@@ -93,7 +95,7 @@ export default async function PublicDashboard() {
                     <MetricCard
                         key={kpi.name}
                         title={kpi.name}
-                        value={`${kpi.unit === 'INR' ? '₹' : ''}${kpi.value.toLocaleString()} ${kpi.unit !== 'INR' ? kpi.unit : ''}`}
+                        value={`${kpi.unit === 'INR' ? '₹' : ''}${(kpi.value || 0).toLocaleString()} ${kpi.unit !== 'INR' ? kpi.unit : ''}`}
                         description={`Last updated: ${kpi.date}`}
                         trend={kpi.trend}
                         trendValue={kpi.trend !== "neutral" ? "vs last quarter" : undefined}
@@ -123,8 +125,7 @@ export default async function PublicDashboard() {
                 <h3 className="font-semibold text-lg mb-2">Government Data Transparency</h3>
                 <p className="text-sm text-muted-foreground">
                     This dashboard displays official financial metrics approved for public release.
-                    The data is sourced directly from the Ministry&apos;s central database (`financial_metrics` table)
-                    where `is_public` flag is enabled.
+                    The data is sourced directly from the Ministry&apos;s central database (`financial_metrics` table).
                 </p>
                 <div className="mt-4 flex gap-4">
                     <Link href="/login">

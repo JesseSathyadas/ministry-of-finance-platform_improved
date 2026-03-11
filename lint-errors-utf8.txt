@@ -1,0 +1,360 @@
+﻿
+> ministry-of-finance-platform@1.0.0 lint
+> next lint
+
+node.exe : 
+At C:\Program Files\nod
+ejs\npm.ps1:29 char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (:String) [],    
+ RemoteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+./app/analyst/trends/pa
+ge.tsx
+33:8  Warning: React 
+Hook useEffect has a 
+missing dependency: 
+'supabase'. Either 
+include it or remove 
+the dependency array.  
+react-hooks/exhaustive-
+deps
+
+./app/api/applications/
+route.ts
+34:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/api/applications/
+[id]/review/route.ts
+65:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/api/schemes/route
+.ts
+9:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+48:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/api/schemes/[id]/
+route.ts
+39:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+80:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/api/schemes/[id]/
+status/route.ts
+39:21  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/api/setup-roles/r
+oute.ts
+6:27  Error: 'request' 
+is defined but never 
+used.  @typescript-esli
+nt/no-unused-vars
+10:21  Error: 'users' 
+is assigned a value 
+but never used.  @types
+cript-eslint/no-unused-
+vars
+10:37  Error: 
+'listError' is 
+assigned a value but 
+never used.  @typescrip
+t-eslint/no-unused-vars
+
+./app/citizen/applicati
+ons/applications-client
+.tsx
+28:119  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+51:34  Error: `'` can 
+be escaped with 
+`&apos;`, `&lsquo;`, 
+`&#39;`, `&rsquo;`.  re
+act/no-unescaped-entiti
+es
+119:61  Error: `"` can 
+be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+119:80  Error: `"` can 
+be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+197:49  Error: `"` can 
+be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+197:76  Error: `"` can 
+be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+
+./app/citizen/schemes/s
+chemes-client.tsx
+9:10  Error: 
+'Textarea' is defined 
+but never used.  @types
+cript-eslint/no-unused-
+vars
+47:11  Error: 'router' 
+is assigned a value 
+but never used.  @types
+cript-eslint/no-unused-
+vars
+150:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./app/signup/page.tsx
+10:10  Error: 
+'UserPlus' is defined 
+but never used.  @types
+cript-eslint/no-unused-
+vars
+25:21  Error: 'data' 
+is assigned a value 
+but never used.  @types
+cript-eslint/no-unused-
+vars
+42:23  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./components/admin/sche
+me-management.tsx
+44:21  Error: 
+'setSchemes' is 
+assigned a value but 
+never used.  @typescrip
+t-eslint/no-unused-vars
+114:48  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+137:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+159:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+179:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./components/admin/user
+-management.tsx
+42:91  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+63:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+76:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+93:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./components/analyst/ap
+plication-review.tsx
+45:26  Error: 
+'setApplications' is 
+assigned a value but 
+never used.  @typescrip
+t-eslint/no-unused-vars
+76:25  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+90:131  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+136:97  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+292:90  Error: `"` can 
+be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+292:117  Error: `"` 
+can be escaped with 
+`&quot;`, `&ldquo;`, 
+`&#34;`, `&rdquo;`.  re
+act/no-unescaped-entiti
+es
+
+./components/auth-provi
+der.tsx
+120:8  Warning: React 
+Hook useEffect has a 
+missing dependency: 
+'supabase'. Either 
+include it or remove 
+the dependency array.  
+react-hooks/exhaustive-
+deps
+
+./components/main-nav.t
+sx
+79:42  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./components/ui/textare
+a.tsx
+4:18  Error: An 
+interface declaring no 
+members is equivalent 
+to its supertype.  @typ
+escript-eslint/no-empty
+-object-type
+
+./lib/supabase/applicat
+ions.ts
+13:122  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+168:108  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./lib/supabase/middlewa
+re.ts
+17:78  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./lib/supabase/schemes.
+ts
+50:78  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+89:101  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+115:101  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+138:131  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+157:84  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./lib/supabase/server.t
+s
+15:77  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+./lib/types/schemes.ts
+30:20  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+54:20  Error: 
+Unexpected any. 
+Specify a different 
+type.  @typescript-esli
+nt/no-explicit-any
+
+info  - Need to 
+disable some ESLint 
+rules? Learn more 
+here: https://nextjs.or
+g/docs/basic-features/e
+slint#disabling-rules

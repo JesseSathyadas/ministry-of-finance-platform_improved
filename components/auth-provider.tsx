@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isMounted = false
             subscription.unsubscribe()
         }
-    }, [])
+    }, [supabase])
 
     return (
         <AuthContext.Provider value={{ user, session, role, isLoading }}>

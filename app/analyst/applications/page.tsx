@@ -7,11 +7,11 @@ export const revalidate = 0
 
 async function getApplicationData() {
     const applications = await getAllApplications()
-    const schemes = await getActiveSchemes()
+    const activeSchemes = await getActiveSchemes()
 
     return {
         applications,
-        schemes: schemes.map(s => ({ id: s.id, name: s.name }))
+        reviewSchemes: activeSchemes.map(s => ({ id: s.id, title: s.title }))
     }
 }
 
@@ -40,7 +40,7 @@ export default async function AnalystApplicationsPage() {
 
             <ApplicationReview
                 applications={data.applications}
-                schemes={data.schemes}
+                schemes={data.reviewSchemes}
                 userRole={userRole}
             />
         </div>

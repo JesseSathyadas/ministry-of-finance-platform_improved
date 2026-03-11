@@ -31,9 +31,10 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(data, { status: 201 })
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to submit application'
         return NextResponse.json(
-            { error: error.message || 'Failed to submit application' },
+            { error: errorMessage },
             { status: 500 }
         )
     }

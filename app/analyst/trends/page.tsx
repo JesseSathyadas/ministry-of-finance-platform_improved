@@ -30,7 +30,7 @@ export default function TrendAnalysisPage() {
             }
         }
         fetchMetrics()
-    }, [])
+    }, [supabase])
 
     const { role } = useAuth()
     // STRICT GOVERNANCE: Admins can view this page but MUST NOT trigger analysis.
@@ -69,7 +69,7 @@ export default function TrendAnalysisPage() {
                 throw new Error("Insufficient data for analysis")
             }
 
-            const values = metricData.map(d => d.value)
+            const values = metricData.map(d => d.value ?? (d as any).metric_value ?? 0)
             const timestamps = metricData.map(d => d.recorded_at)
 
             // 3. Call AI Service

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/components/auth-provider"
-import { hasRole, ROLES } from "@/lib/auth/rbac"
+import { hasRole, ROLES, UserRole } from "@/lib/auth/rbac"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
@@ -21,7 +21,15 @@ export function MainNav() {
 
     if (isLoading) return <div className="h-16 border-b" /> // Skeleton placeholder
 
-    const navItems = [
+    interface NavItem {
+        title: string
+        href: string
+        requiredRole: UserRole
+        showAlways: boolean
+        requireAuth?: boolean
+    }
+
+    const navItems: NavItem[] = [
         {
             title: "Overview",
             href: "/",
@@ -76,7 +84,7 @@ export function MainNav() {
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-                    {navItems.map((item: any) => {
+                    {navItems.map((item) => {
                         const canView = item.showAlways || hasRole(role || undefined, item.requiredRole)
                         const needsAuth = item.requireAuth && !user
                         if (!canView || needsAuth) return null

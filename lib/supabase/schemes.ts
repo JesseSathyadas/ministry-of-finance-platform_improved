@@ -47,7 +47,7 @@ export async function getAllSchemes(): Promise<SchemeWithStats[]> {
         .select('scheme_id, status')
 
     // 3. Map memory for speed
-    const schemesWithStats: SchemeWithStats[] = (schemes || []).map((scheme: any) => {
+    const schemesWithStats: SchemeWithStats[] = (schemes || []).map((scheme: Scheme & { scheme_applications: { count: number }[] }) => {
         const stats = allStatuses?.filter(s => s.scheme_id === scheme.id) || []
 
         return {
@@ -86,7 +86,7 @@ export async function getSchemeById(id: string): Promise<Scheme | null> {
 /**
  * Create a new scheme (admin only)
  */
-export async function createScheme(input: CreateSchemeInput): Promise<{ data: Scheme | null; error: any }> {
+export async function createScheme(input: CreateSchemeInput): Promise<{ data: Scheme | null; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     // Get current user
@@ -112,7 +112,7 @@ export async function createScheme(input: CreateSchemeInput): Promise<{ data: Sc
 /**
  * Update an existing scheme (admin only)
  */
-export async function updateScheme(input: UpdateSchemeInput): Promise<{ data: Scheme | null; error: any }> {
+export async function updateScheme(input: UpdateSchemeInput): Promise<{ data: Scheme | null; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     const { id, ...updates } = input
@@ -135,7 +135,7 @@ export async function updateScheme(input: UpdateSchemeInput): Promise<{ data: Sc
 /**
  * Toggle scheme status (admin only)
  */
-export async function toggleSchemeStatus(id: string, status: 'active' | 'inactive' | 'draft'): Promise<{ success: boolean; error: any }> {
+export async function toggleSchemeStatus(id: string, status: 'active' | 'inactive' | 'draft'): Promise<{ success: boolean; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     const { error } = await supabase
@@ -154,7 +154,7 @@ export async function toggleSchemeStatus(id: string, status: 'active' | 'inactiv
 /**
  * Delete a scheme (super admin only)
  */
-export async function deleteScheme(id: string): Promise<{ success: boolean; error: any }> {
+export async function deleteScheme(id: string): Promise<{ success: boolean; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     const { error } = await supabase

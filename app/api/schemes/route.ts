@@ -6,9 +6,10 @@ export async function GET() {
     try {
         const schemes = await getAllSchemes()
         return NextResponse.json(schemes)
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch schemes'
         return NextResponse.json(
-            { error: error.message || 'Failed to fetch schemes' },
+            { error: errorMessage },
             { status: 500 }
         )
     }
@@ -45,9 +46,10 @@ export async function POST(request: NextRequest) {
         }
 
         return NextResponse.json(data, { status: 201 })
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to create scheme'
         return NextResponse.json(
-            { error: error.message || 'Failed to create scheme' },
+            { error: errorMessage },
             { status: 500 }
         )
     }

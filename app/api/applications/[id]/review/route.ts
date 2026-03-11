@@ -21,7 +21,11 @@ export async function PATCH(
             .eq('id', user.id)
             .single()
 
+        console.log('Review API - User ID:', user.id)
+        console.log('Review API - User profile:', profile)
+
         if (!profile || !['analyst', 'admin', 'super_admin'].includes(profile.role)) {
+            console.log('Review API - Access denied. Role:', profile?.role)
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
 
@@ -62,9 +66,10 @@ export async function PATCH(
         }
 
         return NextResponse.json({ success })
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to review application'
         return NextResponse.json(
-            { error: error.message || 'Failed to review application' },
+            { error: errorMessage },
             { status: 500 }
         )
     }

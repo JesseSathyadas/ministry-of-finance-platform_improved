@@ -41,46 +41,48 @@ interface SchemeManagementProps {
 
 export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementProps) {
     const router = useRouter()
-    const [schemes, setSchemes] = useState(initialSchemes)
+    const schemes = initialSchemes
     const [isCreateOpen, setIsCreateOpen] = useState(false)
     const [editingScheme, setEditingScheme] = useState<SchemeWithStats | null>(null)
     const [isLoading, setIsLoading] = useState(false)
 
     // Form state
     const [formData, setFormData] = useState({
-        name: "",
-        ministry: "",
+        title: "",
+        category: "",
         description: "",
-        benefits: "",
-        eligibility_criteria: "{}",
-        benefit_amount: "",
+        benefits_description: "",
+        eligibility_criteria: "Occupation: \nMax Annual Income: \nResidence: ",
+        required_documents: "",
         status: "draft" as SchemeStatus
     })
 
     const resetForm = () => {
         setFormData({
-            name: "",
-            ministry: "",
-            description: "",
-            benefits: "",
-            eligibility_criteria: "{}",
-            benefit_amount: "",
-            status: "draft"
-        })
+                title: "",
+                category: "",
+                description: "",
+                benefits_description: "",
+                eligibility_criteria: "Occupation: \nMax Annual Income: \nResidence: ",
+                required_documents: "",
+                status: "draft"
+            })
         setEditingScheme(null)
     }
 
     const handleEdit = (scheme: SchemeWithStats) => {
         setEditingScheme(scheme)
-        setFormData({
-            name: scheme.name,
-            ministry: scheme.ministry,
-            description: scheme.description,
-            benefits: scheme.benefits.join("\n"),
-            eligibility_criteria: JSON.stringify(scheme.eligibility_criteria, null, 2),
-            benefit_amount: scheme.benefit_amount?.toString() || "",
-            status: scheme.status
-        })
+        if (scheme) {
+            setFormData({
+                title: scheme.title,
+                category: scheme.category,
+                description: scheme.description,
+                benefits_description: scheme.benefits_description,
+                eligibility_criteria: scheme.eligibility_criteria,
+                required_documents: scheme.required_documents?.join('\n') || '',
+                status: scheme.status
+            })
+        }
         setIsCreateOpen(true)
     }
 
@@ -89,28 +91,28 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
         setIsLoading(true)
 
         try {
-            // Parse benefits (one per line)
-            const benefitsArray = formData.benefits.split("\n").filter(b => b.trim())
+            // Parse eligibility criteria JSON - this part was removed in the instruction, but the alert remains.
+            // Keeping the alert for now, but the parsing logic is gone.
+            // If eligibility_criteria is no longer JSON, this alert might be misleading.
+            // Assuming eligibility_criteria is now a string.
+            // let criteria
+            // try {
+            //     criteria = JSON.parse(formData.eligibility_criteria)
+            // } catch {
+            //     alert("Invalid JSON in eligibility criteria")
+            //     setIsLoading(false)
+            //     return
+            // }
 
-            // Parse eligibility criteria JSON
-            let criteria
-            try {
-                criteria = JSON.parse(formData.eligibility_criteria)
-            } catch {
-                alert("Invalid JSON in eligibility criteria")
-                setIsLoading(false)
-                return
-            }
-
-            const payload = {
-                name: formData.name,
-                ministry: formData.ministry,
-                description: formData.description,
-                benefits: benefitsArray,
-                eligibility_criteria: criteria,
-                benefit_amount: formData.benefit_amount ? parseFloat(formData.benefit_amount) : null,
-                status: formData.status
-            }
+                const schemeData = {
+                    title: formData.title,
+                    category: formData.category,
+                    description: formData.description,
+                    benefits_description: formData.benefits_description,
+                    eligibility_criteria: formData.eligibility_criteria,
+                    required_documents: formData.required_documents.split('\n').filter(Boolean),
+                    status: formData.status
+                }
 
             const url = editingScheme
                 ? `/api/schemes/${editingScheme.id}`
@@ -121,7 +123,7 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
             const response = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(schemeData) // Changed payload to schemeData
             })
 
             if (!response.ok) {
@@ -132,8 +134,9 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
             setIsCreateOpen(false)
             resetForm()
             router.refresh()
-        } catch (error: any) {
-            alert(error.message || 'An error occurred')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(message)
         } finally {
             setIsLoading(false)
         }
@@ -154,8 +157,9 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
             }
 
             router.refresh()
-        } catch (error: any) {
-            alert(error.message || 'An error occurred')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(message)
         }
     }
 
@@ -174,8 +178,9 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
             }
 
             router.refresh()
-        } catch (error: any) {
-            alert(error.message || 'An error occurred')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(message)
         }
     }
 
@@ -216,21 +221,17 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Scheme Name *</Label>
+                                    <Label>Scheme Title</Label>
                                     <Input
-                                        id="name"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        value={formData.title || ''}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="ministry">Ministry *</Label>
+                                    <Label>Category</Label>
                                     <Input
-                                        id="ministry"
-                                        required
-                                        value={formData.ministry}
-                                        onChange={(e) => setFormData({ ...formData, ministry: e.target.value })}
+                                        value={formData.category || ''}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -247,41 +248,42 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="benefits">Benefits (one per line) *</Label>
+                                <Label htmlFor="benefits_description">Benefits Description *</Label>
                                 <Textarea
-                                    id="benefits"
+                                    id="benefits_description"
                                     required
                                     rows={3}
                                     placeholder="₹6000 per year&#10;Direct Bank Transfer"
-                                    value={formData.benefits}
-                                    onChange={(e) => setFormData({ ...formData, benefits: e.target.value })}
+                                    value={formData.benefits_description}
+                                    onChange={(e) => setFormData({ ...formData, benefits_description: e.target.value })}
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="eligibility">Eligibility Criteria (JSON) *</Label>
+                                <Label htmlFor="eligibility">Eligibility Criteria *</Label>
                                 <Textarea
                                     id="eligibility"
                                     required
                                     rows={5}
-                                    placeholder='{"min_age": 18, "max_income": 500000}'
+                                    placeholder='Occupation: &#10;Max Annual Income: &#10;Residence: '
                                     value={formData.eligibility_criteria}
                                     onChange={(e) => setFormData({ ...formData, eligibility_criteria: e.target.value })}
                                     className="font-mono text-sm"
                                 />
                             </div>
 
+                            <div className="space-y-2">
+                                <Label htmlFor="required_documents">Required Documents (one per line)</Label>
+                                <Textarea
+                                    id="required_documents"
+                                    rows={3}
+                                    placeholder="Aadhar Card&#10;PAN Card&#10;Income Certificate"
+                                    value={formData.required_documents}
+                                    onChange={(e) => setFormData({ ...formData, required_documents: e.target.value })}
+                                />
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="amount">Benefit Amount (₹)</Label>
-                                    <Input
-                                        id="amount"
-                                        type="number"
-                                        step="0.01"
-                                        value={formData.benefit_amount}
-                                        onChange={(e) => setFormData({ ...formData, benefit_amount: e.target.value })}
-                                    />
-                                </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="status">Status *</Label>
                                     <Select
@@ -322,8 +324,8 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Ministry</TableHead>
+                                <TableHead>Title</TableHead>
+                                <TableHead>Category</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Applications</TableHead>
                                 <TableHead className="text-right">Actions</TableHead>
@@ -339,8 +341,8 @@ export function SchemeManagement({ schemes: initialSchemes }: SchemeManagementPr
                             ) : (
                                 schemes.map((scheme) => (
                                     <TableRow key={scheme.id}>
-                                        <TableCell className="font-medium">{scheme.name}</TableCell>
-                                        <TableCell className="text-sm text-muted-foreground">{scheme.ministry}</TableCell>
+                                        <TableCell className="font-medium">{scheme.title}</TableCell>
+                                        <TableCell className="text-sm text-muted-foreground">{scheme.category}</TableCell>
                                         <TableCell>{getStatusBadge(scheme.status)}</TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex items-center justify-end gap-2">

@@ -25,8 +25,8 @@ export type CitizenProfile = z.infer<typeof CitizenProfileSchema>
 // Scheme Definition
 export interface Scheme {
     id: string
-    name: string
-    ministry: string
+    title: string
+    category: string
     description: string
     benefits: string[]
     criteria: SchemeCriteria
@@ -107,7 +107,7 @@ export function checkEligibility(profile: CitizenProfile, schemes: Scheme[]): El
 
         return {
             scheme_id: scheme.id,
-            scheme_name: scheme.name,
+            scheme_name: scheme.title, // Changed from scheme.name to scheme.title
             status: eligible ? 'eligible' : 'not_eligible',
             reasons
         }

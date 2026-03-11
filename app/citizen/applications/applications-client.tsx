@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { ComponentType } from "react"
 import * as React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -25,14 +26,16 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     const getStatusConfig = (status: ApplicationStatus) => {
-        const config: Record<ApplicationStatus, { variant: "default" | "success" | "destructive" | "secondary"; icon: any; color: string }> = {
+        const config: Record<ApplicationStatus, { variant: "default" | "success" | "destructive" | "secondary"; icon: ComponentType<{ className?: string }>; color: string }> = {
             pending: { variant: "default", icon: Clock, color: "text-yellow-600" },
+            submitted: { variant: "default", icon: Clock, color: "text-blue-600" },
             under_review: { variant: "secondary", icon: Eye, color: "text-blue-600" },
+            forwarded_to_admin: { variant: "secondary", icon: Eye, color: "text-purple-600" },
             approved: { variant: "success", icon: CheckCircle, color: "text-green-600" },
             rejected: { variant: "destructive", icon: XCircle, color: "text-red-600" }
         }
 
-        return config[status]
+        return config[status] || { variant: "default", icon: Clock, color: "text-gray-600" }
     }
 
     const openDetails = (app: ApplicationWithDetails) => {
@@ -47,7 +50,7 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
                     <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No Applications Yet</h3>
                     <p className="text-muted-foreground mb-4">
-                        You haven't applied for any schemes yet.
+                        You haven&apos;t applied for any schemes yet.
                     </p>
                     <Button asChild>
                         <a href="/citizen/schemes">Browse Schemes</a>
@@ -69,9 +72,9 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
                             <CardHeader>
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
-                                        <CardTitle className="text-xl">{app.scheme?.name}</CardTitle>
+                                        <CardTitle className="text-xl">{app.scheme?.title}</CardTitle>
                                         <CardDescription className="mt-1">
-                                            {app.scheme?.ministry}
+                                            {app.scheme?.category}
                                         </CardDescription>
                                     </div>
                                     <Badge variant={statusConfig.variant} className="flex items-center gap-1">
@@ -115,7 +118,7 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
                                                     </p>
                                                     {app.review_notes && (
                                                         <p className="text-sm mt-2 italic">
-                                                            "{app.review_notes}"
+                                                            &quot;{app.review_notes}&quot;
                                                         </p>
                                                     )}
                                                 </div>
@@ -150,8 +153,8 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
                         <div className="space-y-6">
                             {/* Scheme Info */}
                             <div>
-                                <h3 className="font-semibold text-lg mb-2">{selectedApp.scheme?.name}</h3>
-                                <p className="text-sm text-muted-foreground">{selectedApp.scheme?.ministry}</p>
+                                <h3 className="font-semibold text-lg mb-2">{selectedApp.scheme?.title}</h3>
+                                <p className="text-sm text-muted-foreground">{selectedApp.scheme?.category}</p>
                                 <p className="text-sm mt-2">{selectedApp.scheme?.description}</p>
                             </div>
 
@@ -193,7 +196,7 @@ export function MyApplicationsClient({ applications }: MyApplicationsClientProps
                                         )}
                                         {selectedApp.review_notes && (
                                             <p className="text-sm mt-2 italic">
-                                                "{selectedApp.review_notes}"
+                                                &quot;{selectedApp.review_notes}&quot;
                                             </p>
                                         )}
                                     </div>

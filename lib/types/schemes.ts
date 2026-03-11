@@ -3,18 +3,20 @@
 // ============================================
 
 export type SchemeStatus = 'draft' | 'active' | 'inactive'
-export type ApplicationStatus = 'pending' | 'under_review' | 'forwarded_to_admin' | 'approved' | 'rejected'
+export type ApplicationStatus = 'pending' | 'submitted' | 'under_review' | 'forwarded_to_admin' | 'approved' | 'rejected'
 
 export interface Scheme {
     id: string
-    name: string
-    ministry: string
+    title: string
+    category: string
     description: string
-    benefits: string[]
-    eligibility_criteria: EligibilityCriteria
-    benefit_amount: number | null
+    benefits_description: string
+    eligibility_criteria: string
+    required_documents: string[]
+    max_applications?: number
+    current_applications?: number
+    deadline?: string
     status: SchemeStatus
-    created_by: string | null
     created_at: string
     updated_at: string
 }
@@ -25,7 +27,7 @@ export interface EligibilityCriteria {
     max_income?: number
     allowed_occupations?: string[]
     residence_type?: string[]
-    [key: string]: any // Allow additional custom criteria
+    [key: string]: unknown // Allow additional custom criteria
 }
 
 export interface SchemeApplication {
@@ -49,7 +51,7 @@ export interface ApplicationData {
     state: string
     residence: 'urban' | 'rural'
     disability_status?: boolean
-    [key: string]: any // Allow additional fields
+    [key: string]: unknown // Allow additional fields
 }
 
 // Extended types with relations for UI
@@ -76,12 +78,12 @@ export interface ApplicationWithDetails extends SchemeApplication {
 
 // Form types
 export interface CreateSchemeInput {
-    name: string
-    ministry: string
+    title: string
+    category: string
     description: string
-    benefits: string[]
-    eligibility_criteria: EligibilityCriteria
-    benefit_amount: number | null
+    benefits_description: string
+    eligibility_criteria: string
+    required_documents: string[]
     status: SchemeStatus
 }
 

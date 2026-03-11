@@ -33,14 +33,14 @@ async function getDashboardData() {
         .order('forecast_date', { ascending: true })
 
     // Process data for charts
-    const revenueData = metrics?.filter(m => m.metric_category === 'revenue').map(m => ({
+    const revenueData = metrics?.filter(m => (m.metric_category || m.metric_type) === 'revenue').map(m => ({
         date: m.recorded_at,
-        value: m.value
+        value: m.value ?? m.metric_value ?? 0
     })) || []
 
-    const expenditureData = metrics?.filter(m => m.metric_category === 'expenditure').map(m => ({
+    const expenditureData = metrics?.filter(m => (m.metric_category || m.metric_type) === 'expenditure').map(m => ({
         date: m.recorded_at,
-        value: m.value
+        value: m.value ?? m.metric_value ?? 0
     })) || []
 
     // Calculate KPIs

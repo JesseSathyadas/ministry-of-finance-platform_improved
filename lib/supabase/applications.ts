@@ -10,7 +10,7 @@ import type {
 /**
  * Submit a new application (citizen only)
  */
-export async function submitApplication(input: SubmitApplicationInput): Promise<{ data: SchemeApplication | null; error: any }> {
+export async function submitApplication(input: SubmitApplicationInput): Promise<{ data: SchemeApplication | null; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     // Get current user
@@ -56,13 +56,7 @@ export async function getMyApplications(): Promise<ApplicationWithDetails[]> {
         .from('scheme_applications')
         .select(`
             *,
-            scheme:schemes (*),
-            reviewer:user_profiles!scheme_applications_reviewed_by_fkey (
-                id,
-                email,
-                full_name,
-                role
-            )
+            scheme:schemes (*)
         `)
         .eq('citizen_id', user.id)
         .order('submitted_at', { ascending: false })
@@ -85,18 +79,7 @@ export async function getAllApplications(filters?: ApplicationFilters): Promise<
         .from('scheme_applications')
         .select(`
             *,
-            scheme:schemes (*),
-            citizen:user_profiles!scheme_applications_citizen_id_fkey (
-                id,
-                email,
-                full_name
-            ),
-            reviewer:user_profiles!scheme_applications_reviewed_by_fkey (
-                id,
-                email,
-                full_name,
-                role
-            )
+            scheme:schemes (*)
         `)
 
     // Apply filters
@@ -106,6 +89,9 @@ export async function getAllApplications(filters?: ApplicationFilters): Promise<
 
     if (filters?.status) {
         query = query.eq('status', filters.status)
+    } else {
+        // By default, show actionable statuses that exist in the database
+        query = query.in('status', ['pending', 'submitted', 'under_review', 'forwarded_to_admin', 'approved', 'rejected'])
     }
 
     if (filters?.from_date) {
@@ -125,6 +111,12 @@ export async function getAllApplications(filters?: ApplicationFilters): Promise<
         return []
     }
 
+    // Debug: Log all applications and their statuses
+    console.log('All applications:', data?.length || 0)
+    if (data && data.length > 0) {
+        console.log('Application statuses:', data.map(app => ({ id: app.id, status: app.status, scheme: app.scheme?.title })))
+    }
+
     return data || []
 }
 
@@ -138,18 +130,7 @@ export async function getApplicationById(id: string): Promise<ApplicationWithDet
         .from('scheme_applications')
         .select(`
             *,
-            scheme:schemes (*),
-            citizen:user_profiles!scheme_applications_citizen_id_fkey (
-                id,
-                email,
-                full_name
-            ),
-            reviewer:user_profiles!scheme_applications_reviewed_by_fkey (
-                id,
-                email,
-                full_name,
-                role
-            )
+            scheme:schemes (*)
         `)
         .eq('id', id)
         .single()
@@ -165,7 +146,7 @@ export async function getApplicationById(id: string): Promise<ApplicationWithDet
 /**
  * Review an application (analyst/admin only)
  */
-export async function reviewApplication(input: ReviewApplicationInput): Promise<{ success: boolean; error: any }> {
+export async function reviewApplication(input: ReviewApplicationInput): Promise<{ success: boolean; error: { message: string; code?: string } | null }> {
     const supabase = createClient()
 
     // Get current user

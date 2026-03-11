@@ -36,9 +36,10 @@ export async function PATCH(
         }
 
         return NextResponse.json({ success })
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update status'
         return NextResponse.json(
-            { error: error.message || 'Failed to update status' },
+            { error: errorMessage },
             { status: 500 }
         )
     }

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Textarea } from "@/components/ui/textarea"
 import {
     Select,
     SelectContent,
@@ -25,7 +24,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox"
 import { CheckCircle2, Search, Filter, FileText } from "lucide-react"
 import type { Scheme } from "@/lib/types/schemes"
-import { useRouter } from "next/navigation"
 
 interface SchemesClientProps {
     schemes: Scheme[]
@@ -44,7 +42,6 @@ interface CitizenProfile {
 }
 
 export function SchemesClient({ schemes }: SchemesClientProps) {
-    const router = useRouter()
     const [profile, setProfile] = useState<CitizenProfile>({
         age: 30,
         state: "Delhi",
@@ -70,40 +67,30 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
     // Check eligibility
     const handleCheck = () => {
         const eligibilityResults = schemes.map(scheme => {
-            const criteria = scheme.eligibility_criteria
+            const criteria = scheme.eligibility_criteria.toLowerCase()
             const reasons: string[] = []
             let eligible = true
 
-            // Check age
-            if (criteria.min_age && profile.age < criteria.min_age) {
+            // Basic keyword check for demo purposes since criteria is purely text in the DB
+            if (criteria.includes('rural') && profile.residence !== 'rural') {
                 eligible = false
-                reasons.push(`Minimum age required: ${criteria.min_age}`)
+                reasons.push('Requires Rural residence')
             }
-            if (criteria.max_age && profile.age > criteria.max_age) {
+            if (criteria.includes('urban') && profile.residence !== 'urban') {
                 eligible = false
-                reasons.push(`Maximum age limit: ${criteria.max_age}`)
+                reasons.push('Requires Urban residence')
             }
-
-            // Check income
-            if (criteria.max_income && profile.annual_income > criteria.max_income) {
+            if (criteria.includes('student') && profile.occupation !== 'student') {
                 eligible = false
-                reasons.push(`Income exceeds limit of ₹${criteria.max_income.toLocaleString()}`)
+                reasons.push('Requires Student occupation')
             }
-
-            // Check occupation
-            if (criteria.allowed_occupations && !criteria.allowed_occupations.includes(profile.occupation)) {
+            if (criteria.includes('farmer') && profile.occupation !== 'farmer') {
                 eligible = false
-                reasons.push(`Occupation must be: ${criteria.allowed_occupations.join(', ')}`)
-            }
-
-            // Check residence
-            if (criteria.residence_type && !criteria.residence_type.includes(profile.residence)) {
-                eligible = false
-                reasons.push(`Residence must be: ${criteria.residence_type.join(', ')}`)
+                reasons.push('Requires Farmer occupation')
             }
 
             if (eligible) {
-                reasons.push('You meet all eligibility criteria')
+                reasons.push('You appear to meet the basic criteria based on your profile.')
             }
 
             return {
@@ -157,8 +144,9 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
             alert('Application submitted successfully! You can track its status in "My Applications".')
             setIsApplyOpen(false)
             setSelectedScheme(null)
-        } catch (error: any) {
-            alert(error.message || 'An error occurred')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(message)
         } finally {
             setIsSubmitting(false)
         }
@@ -293,9 +281,9 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
                                             <div className="flex justify-between items-start">
                                                 <div>
                                                     <div className="text-xs font-semibold text-gov-teal uppercase tracking-wider mb-1">
-                                                        {scheme.ministry}
+                                                        {scheme.category}
                                                     </div>
-                                                    <CardTitle className="text-xl text-gov-navy-900">{scheme.name}</CardTitle>
+                                                    <CardTitle className="text-xl text-gov-navy-900">{scheme.title}</CardTitle>
                                                 </div>
                                                 {hasChecked && (
                                                     <Badge variant={isEligible ? "success" : "destructive"}>
@@ -309,10 +297,9 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
 
                                             {/* Brief Benefits Preview */}
                                             <div className="flex gap-2 flex-wrap mb-4">
-                                                {scheme.benefits.slice(0, 2).map((b, i) => (
-                                                    <Badge key={i} variant="secondary" className="font-normal">{b}</Badge>
-                                                ))}
-                                                {scheme.benefits.length > 2 && <Badge variant="outline">+{scheme.benefits.length - 2} more</Badge>}
+                                                <Badge variant="secondary" className="font-normal truncate max-w-[250px]">
+                                                    {scheme.benefits_description.split('.')[0]}
+                                                </Badge>
                                             </div>
 
                                             {hasChecked && result && result.reasons.length > 0 && (
@@ -346,9 +333,9 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
                         <>
                             <DialogHeader>
                                 <div className="text-xs font-semibold text-gov-teal uppercase tracking-wider mb-1">
-                                    {detailScheme.ministry}
+                                    {detailScheme.category}
                                 </div>
-                                <DialogTitle className="text-2xl">{detailScheme.name}</DialogTitle>
+                                <DialogTitle className="text-2xl">{detailScheme.title}</DialogTitle>
                                 <DialogDescription className="text-base mt-2">
                                     {detailScheme.description}
                                 </DialogDescription>
@@ -357,48 +344,13 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
                             <div className="space-y-6 py-4">
                                 <div>
                                     <h4 className="font-semibold text-lg mb-2">Key Benefits</h4>
-                                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                        {detailScheme.benefits.map((benefit, i) => (
-                                            <li key={i}>{benefit}</li>
-                                        ))}
-                                    </ul>
+                                    <p className="text-muted-foreground">{detailScheme.benefits_description}</p>
                                 </div>
-
-                                {detailScheme.benefit_amount && (
-                                    <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                                        <h4 className="font-semibold text-green-900 mb-1">Financial Assistance</h4>
-                                        <p className="text-2xl font-bold text-green-700">₹{detailScheme.benefit_amount.toLocaleString()}</p>
-                                        <p className="text-sm text-green-800">Provided directly to bank account</p>
-                                    </div>
-                                )}
 
                                 <div>
                                     <h4 className="font-semibold text-lg mb-2">Eligibility Criteria</h4>
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
-                                        {detailScheme.eligibility_criteria.min_age && (
-                                            <div className="bg-muted p-3 rounded">
-                                                <span className="text-muted-foreground block text-xs">Minimum Age</span>
-                                                <span className="font-medium">{detailScheme.eligibility_criteria.min_age} Years</span>
-                                            </div>
-                                        )}
-                                        {detailScheme.eligibility_criteria.max_income && (
-                                            <div className="bg-muted p-3 rounded">
-                                                <span className="text-muted-foreground block text-xs">Income Limit</span>
-                                                <span className="font-medium">Up to ₹{detailScheme.eligibility_criteria.max_income.toLocaleString()}</span>
-                                            </div>
-                                        )}
-                                        {detailScheme.eligibility_criteria.residence_type && (
-                                            <div className="bg-muted p-3 rounded">
-                                                <span className="text-muted-foreground block text-xs">Residence</span>
-                                                <span className="font-medium capitalize">{detailScheme.eligibility_criteria.residence_type.join(', ')}</span>
-                                            </div>
-                                        )}
-                                        {detailScheme.eligibility_criteria.allowed_occupations && (
-                                            <div className="bg-muted p-3 rounded">
-                                                <span className="text-muted-foreground block text-xs">Occupation</span>
-                                                <span className="font-medium capitalize">{detailScheme.eligibility_criteria.allowed_occupations.join(', ')}</span>
-                                            </div>
-                                        )}
+                                    <div className="bg-muted p-4 rounded text-sm font-medium leading-relaxed">
+                                        {detailScheme.eligibility_criteria}
                                     </div>
                                 </div>
                             </div>
@@ -424,7 +376,7 @@ export function SchemesClient({ schemes }: SchemesClientProps) {
             <Dialog open={isApplyOpen} onOpenChange={setIsApplyOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Apply for {selectedScheme?.name}</DialogTitle>
+                        <DialogTitle>Apply for {selectedScheme?.title}</DialogTitle>
                         <DialogDescription>
                             Submit your application for this scheme
                         </DialogDescription>

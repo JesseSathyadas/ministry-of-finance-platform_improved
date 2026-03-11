@@ -36,9 +36,10 @@ export async function PUT(
         }
 
         return NextResponse.json(data)
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to update scheme'
         return NextResponse.json(
-            { error: error.message || 'Failed to update scheme' },
+            { error: errorMessage },
             { status: 500 }
         )
     }
@@ -77,9 +78,10 @@ export async function DELETE(
         }
 
         return NextResponse.json({ success })
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to delete scheme'
         return NextResponse.json(
-            { error: error.message || 'Failed to delete scheme' },
+            { error: errorMessage },
             { status: 500 }
         )
     }

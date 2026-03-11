@@ -77,9 +77,10 @@ export async function createUser(data: { email: string; fullName: string; role: 
         revalidatePath('/admin')
         return { success: true, userId: userData.user.id }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error("User creation failed:", error)
-        throw new Error(error.message || "Failed to create user")
+        const errorMessage = error instanceof Error ? error.message : "Failed to create user"
+        throw new Error(errorMessage)
     }
 }
 

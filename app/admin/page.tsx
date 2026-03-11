@@ -33,7 +33,7 @@ async function getAdminData() {
         users: users || [],
         schemes,
         applications,
-        reviewSchemes: activeSchemes.map(s => ({ id: s.id, name: s.name }))
+        reviewSchemes: activeSchemes.map(s => ({ id: s.id, title: s.title }))
     }
 }
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { ComponentType } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -36,13 +37,13 @@ import { format } from "date-fns"
 
 interface ApplicationReviewProps {
     applications: ApplicationWithDetails[]
-    schemes: Array<{ id: string; name: string }>
+    schemes: Array<{ id: string; title: string }>
     userRole: string
 }
 
 export function ApplicationReview({ applications: initialApplications, schemes, userRole }: ApplicationReviewProps) {
     const router = useRouter()
-    const [applications, setApplications] = useState(initialApplications)
+    const [applications] = useState(initialApplications)
     const [selectedApp, setSelectedApp] = useState<ApplicationWithDetails | null>(null)
     const [isReviewOpen, setIsReviewOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
@@ -73,8 +74,9 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
             setSelectedApp(null)
             setReviewNotes("")
             router.refresh()
-        } catch (error: any) {
-            alert(error.message || 'An error occurred')
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "An error occurred"
+            alert(message)
         } finally {
             setIsLoading(false)
         }
@@ -87,8 +89,9 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
     }
 
     const getStatusBadge = (status: ApplicationStatus) => {
-        const config: Record<ApplicationStatus, { variant: "default" | "success" | "destructive" | "secondary" | "warning"; icon: any }> = {
+        const config: Record<ApplicationStatus, { variant: "default" | "success" | "destructive" | "secondary" | "warning"; icon: ComponentType<{ className?: string }> }> = {
             pending: { variant: "default", icon: Clock },
+            submitted: { variant: "default", icon: Clock },
             under_review: { variant: "secondary", icon: Eye },
             forwarded_to_admin: { variant: "warning", icon: Eye },
             approved: { variant: "success", icon: CheckCircle },
@@ -133,13 +136,14 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
                 <CardContent className="flex gap-4">
                     <div className="flex-1 space-y-2">
                         <Label>Status</Label>
-                        <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
+                        <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as ApplicationStatus | "all")}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Statuses</SelectItem>
                                 <SelectItem value="pending">Pending</SelectItem>
+                                <SelectItem value="submitted">Submitted</SelectItem>
                                 <SelectItem value="under_review">Under Review</SelectItem>
                                 <SelectItem value="forwarded_to_admin">Forwarded to Admin</SelectItem>
                                 <SelectItem value="approved">Approved</SelectItem>
@@ -157,7 +161,7 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
                                 <SelectItem value="all">All Schemes</SelectItem>
                                 {schemes.map(scheme => (
                                     <SelectItem key={scheme.id} value={scheme.id}>
-                                        {scheme.name}
+                                        {scheme.title}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -196,7 +200,7 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
                                         <TableCell className="font-medium">
                                             {app.citizen?.full_name || app.citizen?.email || 'Unknown'}
                                         </TableCell>
-                                        <TableCell className="text-sm">{app.scheme?.name || 'Unknown Scheme'}</TableCell>
+                                        <TableCell className="text-sm">{app.scheme?.title || 'Unknown Scheme'}</TableCell>
                                         <TableCell className="text-sm text-muted-foreground">
                                             {format(new Date(app.submitted_at), 'MMM dd, yyyy')}
                                         </TableCell>
@@ -244,8 +248,8 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
                             {/* Scheme Info */}
                             <div>
                                 <Label className="text-muted-foreground">Scheme</Label>
-                                <p className="font-medium text-lg">{selectedApp.scheme?.name}</p>
-                                <p className="text-sm text-muted-foreground">{selectedApp.scheme?.ministry}</p>
+                                <p className="font-medium text-lg">{selectedApp.scheme?.title}</p>
+                                <p className="text-sm text-muted-foreground">{selectedApp.scheme?.category}</p>
                             </div>
 
                             {/* Application Data */}
@@ -289,7 +293,7 @@ export function ApplicationReview({ applications: initialApplications, schemes, 
                                         {selectedApp.reviewed_at && format(new Date(selectedApp.reviewed_at), 'PPP')}
                                     </p>
                                     {selectedApp.review_notes && (
-                                        <p className="text-sm text-blue-800 mt-2 italic">"{selectedApp.review_notes}"</p>
+                                        <p className="text-sm text-blue-800 mt-2 italic">&quot;{selectedApp.review_notes}&quot;</p>
                                     )}
                                 </div>
                             )}
